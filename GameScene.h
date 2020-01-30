@@ -7,7 +7,7 @@
 //ゲーム画面クラス
 class GameScene : public BaseScene {
 private:
-    MapMgr mapMgr;
+    MapMgr* mMapMgr;
 public :
     GameScene::GameScene(ISceneChanger* changer);
     void initialize() override;    //初期化処理をオーバーライド。

@@ -5,11 +5,9 @@
 
 //シーンの基底クラス。
 class BaseScene : public Task {
-
 protected:
     int mBGHandle;                //画像ハンドル格納用変数
     ISceneChanger* mSceneChanger;    //クラス所有元にシーン切り替えを伝えるインターフェイス
-
 public :
     BaseScene(ISceneChanger* changer);
     virtual ~BaseScene(){}

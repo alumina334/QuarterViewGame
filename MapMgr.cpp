@@ -3,8 +3,9 @@
 
 
 MapMgr::MapMgr():
-	mBlockHandle(0) {
+	mBlockHandle(0), mNextMap(eMap::None) {
 	mMap = NULL;
+
 }
 
 void MapMgr::initialize() {

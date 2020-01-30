@@ -4,13 +4,13 @@
 #include "IMapChanger.h"
 
 class BaseMap : public Task {
-private:
+protected:
 	IMapChanger* mMapChanger;
 	int mBGHandle;
 public:
 	BaseMap(IMapChanger* changer);
-	void initialize() override {}
-	void finalize() override;
-	void update() override {}
-	void draw() override;
+	virtual void initialize() override {}
+	virtual void finalize() override;
+	virtual void update() override {}
+	virtual void draw() override;
 };
