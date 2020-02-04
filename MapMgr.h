@@ -10,6 +10,7 @@ private:
 	int mBlockHandle; 
 	BaseMap* mMap; //現在マップ
 	eMap mNextMap; //移動先マップ
+	Parameter* mParameter; // 移動情報
 
 public:
 	MapMgr();
@@ -18,5 +19,5 @@ public:
 	void update() override;
 	void draw() override;
 
-	void changeMap(eMap nextMap) override;
+	void changeMap(eMap nextMap, Parameter* parameter) override;
 };

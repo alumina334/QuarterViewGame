@@ -16,7 +16,7 @@ void GameScene::update(){
     if(CheckHitKey(KEY_INPUT_ESCAPE)!=0){ //Escキーが押されていたら
         mSceneChanger->changeScene(eScene::Menu, NULL, eStackFlag::Delete);//シーンをメニューに変更
     }
-    if (FALSE) { //エンカウント判定
+    if (FALSE) { //エンカウント判定 // TODO
         mSceneChanger->changeScene(eScene::Battle, NULL, eStackFlag::Push);//バトルシーン突入
     }
 
