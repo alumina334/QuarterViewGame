@@ -4,8 +4,7 @@
 
 MapMgr::MapMgr():
 	mBlockHandle(0), mNextMap(eMap::None), mParameter(NULL){
-	mMap = NULL;
-
+	mMapStack.push(std::make_shared<FieldMap>(this));
 }
 
 void MapMgr::initialize() {
@@ -17,17 +16,26 @@ void MapMgr::finalize() {
 }
 
 void MapMgr::update() {
-	/*
-	もしnextMapが設定されていた場合
-		mMap.finalize();
-		mMap =new FieldMap(this, nextMap ,parameter); FieldMap側でマップチップ、敵情報など読み込み
-		mMap.initialize();
-	mMap.update()
-	*/
+	if (mNextMap != eMap::None) {  // 次のマップが設定されていたら
+		mMapStack.top()->finalize();  // 終了処理してから
+		switch (mNextMap) {              // 分岐
+		case eMap::FieldMap:
+			mMapStack.pop();
+			mMapStack.push(std::make_shared<FieldMap>(this));
+			break;
+		case eMap::BattleMap:
+			//mMapStack.push(std::make_shared<BattleMap>(this));
+			break;
+		default:
+			break;
+		}
+		mMapStack.top()->initialize();
+	}
+	mMapStack.top()->update();
 }
 
 void MapMgr::draw() {
-	//mMap.draw()
+	mMapStack.top()->draw();
 }
 
 void MapMgr::changeMap(eMap nextMap, Parameter* parameter) {

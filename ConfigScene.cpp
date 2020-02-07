@@ -11,7 +11,7 @@ void ConfigScene::initialize(){
 
 //更新
 void ConfigScene::update(){
-    if(CheckHitKey(KEY_INPUT_ESCAPE)!=0){ //Escキーが押されていたら
+    if(Keyboard::keyboardGet(KEY_INPUT_ESCAPE)==1){ //Escキーが押されていたら
         mSceneChanger->changeScene(eScene::Title, NULL, eStackFlag::Pop);//シーンをメニューに変更
     }
 }

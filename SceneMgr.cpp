@@ -40,6 +40,8 @@ void SceneMgr::update(){
             case eScene::Config:
                 tmpScene = std::make_shared<ConfigScene>(this);
                 break;
+            case eScene::Menu:
+                tmpScene = std::make_shared<ConfigScene>(this);
             }
             mSceneStack.push(tmpScene);
             mSceneStack.top()->initialize();    //ƒV[ƒ“‚ğ‰Šú‰»

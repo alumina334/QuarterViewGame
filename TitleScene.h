@@ -2,7 +2,7 @@
 
 #include "BaseScene.h"
 
-enum class eMenu: int {
+enum class eTitle: int {
     Game = 0,
     Config,
 
@@ -12,7 +12,7 @@ enum class eMenu: int {
 //メニュー画面クラス
 class TitleScene : public BaseScene {
 private:
-    static eMenu mNowSelect;
+    static eTitle mNowSelect;
 public:
     TitleScene(ISceneChanger* changer);
     void initialize() override;    //初期化処理をオーバーライド。

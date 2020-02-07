@@ -2,31 +2,31 @@
 #include "Keyboard.h"
 #include "DxLib.h"
 
-eMenu TitleScene::mNowSelect;
+eTitle TitleScene::mNowSelect;
 
 TitleScene::TitleScene(ISceneChanger* changer) : BaseScene(changer) {
 }
 
 
 void TitleScene::initialize(){
-    mNowSelect = eMenu::Game;
+    mNowSelect = eTitle::Game;
     //mBGHandle = LoadGraph("images/Scene_Menu.png");    //”wŒi‰æ‘œ‚Ìƒ[ƒh
 }
 
 
 void TitleScene::update(){
     if (Keyboard::keyboardGet(KEY_INPUT_S) == 1) {
-        mNowSelect = (eMenu)(((int)mNowSelect + 1) % (int)eMenu::Num);
+        mNowSelect = (eTitle)(((int)mNowSelect + 1) % (int)eTitle::Num);
     }
     if (Keyboard::keyboardGet(KEY_INPUT_W) == 1) {
-        mNowSelect = (eMenu)(((int)mNowSelect + ((int)eMenu::Num - 1)) % (int)eMenu::Num);
+        mNowSelect = (eTitle)(((int)mNowSelect + ((int)eTitle::Num - 1)) % (int)eTitle::Num);
     }
     if (Keyboard::keyboardGet(KEY_INPUT_RETURN) == 1) {
         switch (mNowSelect) {
-        case eMenu::Game:
+        case eTitle::Game:
             mSceneChanger->changeScene(eScene::Game, NULL, eStackFlag::Delete);
             break;
-        case eMenu::Config:
+        case eTitle::Config:
             mSceneChanger->changeScene(eScene::Config, NULL, eStackFlag::Push);
             break;
         }
@@ -42,10 +42,10 @@ void TitleScene::draw(){
     int y = 20;
     switch (mNowSelect)
     {
-    case eMenu::Game:
+    case eTitle::Game:
         y = 20;
         break;
-    case eMenu::Config:
+    case eTitle::Config:
         y = 40;
         break;
     }

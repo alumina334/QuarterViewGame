@@ -5,8 +5,8 @@
 #include <stack>
 #include <memory>
 
-class SceneMgr : public ISceneChanger, Task {
 
+class SceneMgr : public ISceneChanger, Task {
 private:
     std::stack<std::shared_ptr<BaseScene>> mSceneStack; //シーンスタック
     eScene mNextScene;    //次のシーン管理変数

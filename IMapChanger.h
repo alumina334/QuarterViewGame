@@ -3,8 +3,9 @@
 #include "Parameter.h"
 
 enum class eMap {
-	Map1 = 0,
-
+	FieldMap = 0,
+	BattleMap,
+	
 	None,
 };
 

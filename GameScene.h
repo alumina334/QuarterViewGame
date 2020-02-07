@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BaseScene.h"
-#include "ISceneChanger.h"
 #include "MapMgr.h"
 
 //ƒQ[ƒ€‰æ–ÊƒNƒ‰ƒX

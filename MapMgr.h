@@ -1,14 +1,15 @@
 #pragma once
 
-#include "Task.h"
 #include "IMapChanger.h"
-#include "BaseMap.h"
+#include "FieldMap.h"
+#include <stack>
+#include <memory>
 
 
-class MapMgr : public Task, IMapChanger {
+class MapMgr : public IMapChanger, Task {
 private:
+	std::stack<std::shared_ptr<BaseMap>> mMapStack; //現在マップ
 	int mBlockHandle; 
-	BaseMap* mMap; //現在マップ
 	eMap mNextMap; //移動先マップ
 	Parameter* mParameter; // 移動情報
 

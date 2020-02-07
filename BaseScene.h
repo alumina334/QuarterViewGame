@@ -2,6 +2,7 @@
 
 #include "Task.h"
 #include "ISceneChanger.h"
+#include "Keyboard.h"
 
 //シーンの基底クラス。
 class BaseScene : public Task {
