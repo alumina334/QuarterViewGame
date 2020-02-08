@@ -29,6 +29,9 @@ void TitleScene::update(){
         case eTitle::Config:
             mSceneChanger->changeScene(eScene::Config, NULL, eStackFlag::Push);
             break;
+        case eTitle::Edit:
+            mSceneChanger->changeScene(eScene::Edit, NULL, eStackFlag::Push);
+            break;
         }
     }
 }
@@ -39,6 +42,7 @@ void TitleScene::draw(){
     DrawString(0, 0,"メニュー画面です。",GetColor(255,255,255));
     DrawString(20,20,"ゲーム画面",GetColor(255,255,255));
     DrawString(20,40,"設定画面",GetColor(255,255,255));
+    DrawString(20, 60, "エディット画面", GetColor(255, 255, 255));
     int y = 20;
     switch (mNowSelect)
     {
@@ -47,6 +51,9 @@ void TitleScene::draw(){
         break;
     case eTitle::Config:
         y = 40;
+        break;
+    case eTitle::Edit:
+        y = 60;
         break;
     }
     DrawString(0, y, "→", GetColor(255, 255, 255));

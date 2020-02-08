@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SystemData.h"
+
 //タスククラス。何かのモジュールはすべてこのTaskクラスを継承する。
 class Task {
 public:

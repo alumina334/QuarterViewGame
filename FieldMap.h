@@ -4,9 +4,9 @@
 
 class FieldMap : public BaseMap {
 private:
-	int mMapChip;
+	int mMapChip[2];
 public:
-	FieldMap(IMapChanger* changer, Parameter* parameter);
+	FieldMap(IMapChanger* changer);
 	void initialize() override;
 	void finalize() override;
 	void update() override;

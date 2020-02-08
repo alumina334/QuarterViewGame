@@ -2,6 +2,7 @@
 #include "ConfigScene.h"
 #include "GameScene.h"
 #include "TitleScene.h"
+#include "EditScene.h"
 #include "SceneMgr.h"
 
 SceneMgr::SceneMgr() : 
@@ -42,6 +43,10 @@ void SceneMgr::update(){
                 break;
             case eScene::Menu:
                 tmpScene = std::make_shared<ConfigScene>(this);
+                break;
+            case eScene::Edit:
+                tmpScene = std::make_shared<EditScene>(this);
+                break;
             }
             mSceneStack.push(tmpScene);
             mSceneStack.top()->initialize();    //ƒV[ƒ“‚ğ‰Šú‰»

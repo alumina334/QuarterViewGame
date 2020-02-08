@@ -7,6 +7,7 @@ enum class eScene {
     Config,       //コンフィグ画面(ゲーム外)
     Game,        //ゲーム画面
     Menu,        //メニュー画面(ゲーム内)
+    Edit,
 
     None,    //無し
 };

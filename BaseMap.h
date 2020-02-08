@@ -2,6 +2,7 @@
 
 #include "Task.h"
 #include "IMapChanger.h"
+#include "Keyboard.h"
 
 class BaseMap : public Task {
 protected:

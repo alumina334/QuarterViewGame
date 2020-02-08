@@ -5,6 +5,7 @@
 enum class eTitle: int {
     Game = 0,
     Config,
+    Edit,
 
     Num,
 };
