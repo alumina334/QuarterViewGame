@@ -19,3 +19,7 @@ void Keyboard::update() {
 int Keyboard::keyboardGet(int keyCode) {
 	return mKey[ keyCode ];
 }
+
+void Keyboard::setNum(int keyCode, int num) {
+	mKey[keyCode] = num;
+}

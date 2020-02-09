@@ -1,6 +1,8 @@
 ﻿#include <vector>
 #include "DxLib.h"
 #include "EditScene.h"
+#include <string>
+#include <sstream>
 
 
 EditScene::EditScene(ISceneChanger* changer) : 
@@ -21,27 +23,67 @@ EditScene::EditScene(ISceneChanger* changer) :
 
 //初期化
 void EditScene::initialize() {
-    /*
-    DrawString(0, 0, "ファイルパスを入力してください。(xxx.dat)", GetColor(255,255,255));
-    KeyInputString(0, 20, 30, fileName, FALSE);
-    PathFileExists(fileName);
-    */
-   // LoadDivGraph("images/block.png", 2, 2, 1, 32, 32, &mMapChip[0]);    //背景画像のロード
-    /*
-    FILE* fp;
-    fopen_s(&fp, "./map/testmap.dat", "rb");
-    fread(&mMapData[0], sizeof(int), 32, fp);
-    fclose(fp);
-    */
-    
+    char fileName[256];
+    DrawString(10, 10, "読み込むファイル名(xxxx)を入力してください。./map/\"xxxx\".dat (Escで新規作成)", GetColor(255, 255, 255));
+    int res = KeyInputString(10, 30, 256, fileName, TRUE);
+    std::string fstring = "./map/" + std::string(fileName) + ".dat";
+    if (res == 1) {
+        FILE* fp;
+        errno_t error;
+
+        error = fopen_s(&fp, fstring.c_str(), "rb");
+        if (error != 0) {
+            DrawString(10, 50, "ファイルが開けませんでした。", GetColor(255, 255, 255));
+            this->initialize();
+        }
+        else {
+            int size;
+            fread(&size, sizeof(int), 1, fp);
+            for (int z = 0; z < size; z++) {
+                for (int y = 0; y < size; y++) {
+                    for (int x = 0; x < size; x++) {
+                        fread(&mMapData[z][y][x], sizeof(int), 1, fp);
+                    }
+                }
+            }
+            fclose(fp);
+        }
+    }
+    Keyboard::setNum(KEY_INPUT_ESCAPE, 2);
 }
 
 //更新
 void EditScene::update() {
     // 終了処理
     if (Keyboard::keyboardGet(KEY_INPUT_ESCAPE) == 1) { //Escキーが押されていたら
-        mSceneChanger->changeScene(eScene::Title, NULL, eStackFlag::Pop);//シーンをメニューに変更
+        // マップデータ書き込み
+        char fileName[256];
+        DrawString(10, 10, "保存ファイル名(xxxx)を入力してください。./map/\"xxxx\".dat  (Escでキャンセル)", GetColor(255, 255, 255));
+        
+        int res = KeyInputString(10, 30, 256, fileName,TRUE);
+        std::string fstring = "./map/" + std::string(fileName) + ".dat";
+        if (res == 1) {
+            FILE* fp;
+            fopen_s(&fp, fstring.c_str(), "wb");
+            //　ヘッダ情報 
+            int size = 32;
+            fwrite(&size, sizeof(int), 1, fp);
+            for each (std::vector<std::vector<int>> vv in mMapData) {
+                for each (std::vector<int> v in vv) {
+                    for each (int elem in v) {
+                        fwrite(&elem, sizeof(int), 1, fp);
+                    }
+                }
+            }
+            fclose(fp);
+            mSceneChanger->changeScene(eScene::Title, NULL, eStackFlag::Pop);//シーンをメニューに変更
+            Keyboard::setNum(KEY_INPUT_RETURN, 2);
+        }
+        else if (res == 2) {
+            
+        }
     }
+    // 編集モード
     if(mSelectFlag){
         if (Keyboard::keyboardGet(KEY_INPUT_W) == 1) {
             if (mSelectBlock - 5 >= 0) {
@@ -54,12 +96,12 @@ void EditScene::update() {
             }
         }
         if (Keyboard::keyboardGet(KEY_INPUT_S) == 1) {
-            if (mSelectBlock + 5 < mMapChip.size()) {
+            if ((unsigned)mSelectBlock + 5 < mMapChip.size()) {
                 mSelectBlock += 5;
             }
         }
         if (Keyboard::keyboardGet(KEY_INPUT_D) == 1) {
-            if (mSelectBlock + 1 < mMapChip.size()) {
+            if ((unsigned)mSelectBlock + 1 < mMapChip.size()) {
                 mSelectBlock++;
             }
         }
@@ -150,7 +192,7 @@ void EditScene::draw() {
                 SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
             }
             else if (z == mSelectZ + 1) {
-                SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+                SetDrawBlendMode(DX_BLENDMODE_ALPHA, 40);
             }
             else {
                 break;
@@ -191,7 +233,7 @@ void EditScene::draw() {
                     if (drawFlag) {
                         int tmpX = SystemData::mWidth * 5 / 8 + (x - y - 1) * SystemData::mChipSize / 2;
                         int tmpY = SystemData::mHeight / 2 + (x + y) * SystemData::mChipSize / 4 - SystemData::mChipSize / 2 * (z - 1);
-                        for (int i = 0; i < tmpHandle.size(); i++) {
+                        for (unsigned int i = 0; i < tmpHandle.size(); i++) {
                             DrawGraph(tmpX, tmpY, tmpHandle[i], TRUE);
                         }
                         drawFlag = FALSE;
