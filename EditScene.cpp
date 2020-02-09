@@ -8,17 +8,18 @@
 EditScene::EditScene(ISceneChanger* changer) : 
     BaseScene(changer), 
     mMapData(32, std::vector<std::vector<int>>(32, std::vector<int>(32, -1))),
-    mSelectBlock(0), mBlendFlag(FALSE), mSelectFlag(FALSE)
+    mMapChip(0, 0), mSelectBlock(0), mBlendFlag(FALSE), mSelectFlag(FALSE), mag(1),
+    mSelectX(0), mSelectY(0), mSelectZ(0)
 {
     mMapChip.resize(3);
     LoadDivGraph("images/block.png", 3, 3, 1, SystemData::mChipSize, SystemData::mChipSize, &mMapChip[0]);    //背景画像のロード
+
     mGraph.resize((int)eGraph::Num);
     mGraph[(int)eGraph::Frame] = LoadGraph("images/block_frame.png");
     mGraph[(int)eGraph::Select] = LoadGraph("images/select_block.png");
     mGraph[(int)eGraph::LeftWall] = LoadGraph("images/left_wall.png");
     mGraph[(int)eGraph::RightWall] = LoadGraph("images/right_wall.png");
     mGraph[(int)eGraph::BottomWall] = LoadGraph("images/bottom_wall.png");
-    mSelectX = 0; mSelectY = 0; mSelectZ = 0;
 }
 
 //初期化
@@ -120,12 +121,12 @@ void EditScene::update() {
             }
         }
         if (Keyboard::keyboardGet(KEY_INPUT_S) == 1) {
-            if (mSelectY < 32) {
+            if (mSelectY < 31) {
                 mSelectY++;
             }
         }
         if (Keyboard::keyboardGet(KEY_INPUT_D) == 1) {
-            if (mSelectX < 32) {
+            if (mSelectX < 31) {
                 mSelectX++;
             }
         }
@@ -135,7 +136,7 @@ void EditScene::update() {
             }
         }
         if (Keyboard::keyboardGet(KEY_INPUT_E) == 1) {
-            if (mSelectZ < 32) {
+            if (mSelectZ < 31) {
                 mSelectZ++;
             }
         }
@@ -155,6 +156,15 @@ void EditScene::update() {
     if (Keyboard::keyboardGet(KEY_INPUT_LCONTROL) == 1) {
         mBlendFlag = !mBlendFlag;
     }
+    // 拡縮率
+    if (Keyboard::keyboardGet(KEY_INPUT_UP) == 1) {
+        mag += 0.1;
+    }
+    else if (Keyboard::keyboardGet(KEY_INPUT_DOWN) == 1) {
+        mag -= 0.1;
+    }
+
+
 }
 
 //描画
@@ -200,73 +210,62 @@ void EditScene::draw() {
 
         }
         for (int xpy = 0; xpy < MAX_SIZE*2-1; xpy++) {
+            int x, y;
             if (xpy < MAX_SIZE) {
-                int y = xpy;
-                for (int x = 0; x <= xpy; x++) {
-                    std::vector<int> tmpHandle;
-                    // ここから影表示
-                    if (x == sx && y == mSelectY && z == mSelectZ) {
-                        tmpHandle.push_back(mGraph[(int)eGraph::LeftWall]);
-                        drawFlag = TRUE;
-                    }
-                    if (x == mSelectX && y == sy && z == mSelectZ) {
-                        tmpHandle.push_back(mGraph[(int)eGraph::RightWall]);
-                        drawFlag = TRUE;
-                    }
-                    if (x == mSelectX && y == mSelectY && z == sz) {
-                        tmpHandle.push_back(mGraph[(int)eGraph::BottomWall]);
-                        drawFlag = TRUE;
-                    }
-                    // ブロック表示
-                    if (mMapData[z][y][x] >= 0){
-                        tmpHandle.push_back(mMapChip[mMapData[z][y][x]]);
-                        drawFlag = TRUE;
-                        int tmpX = SystemData::mWidth * 5 / 8 + (x - y - 1) * SystemData::mChipSize / 2;
-                        int tmpY = SystemData::mHeight / 2 + (x + y) * SystemData::mChipSize / 4 - SystemData::mChipSize / 2 * (z - 1);
-                    }
-                    // マーカー表示
-                    if (x == mSelectX && y == mSelectY && z == mSelectZ) {
-                        tmpHandle.push_back(mGraph[(int)eGraph::Select]);
-                        drawFlag = TRUE;
-                    }
-                    
-                    if (drawFlag) {
-                        int tmpX = SystemData::mWidth * 5 / 8 + (x - y - 1) * SystemData::mChipSize / 2;
-                        int tmpY = SystemData::mHeight / 2 + (x + y) * SystemData::mChipSize / 4 - SystemData::mChipSize / 2 * (z - 1);
-                        for (unsigned int i = 0; i < tmpHandle.size(); i++) {
-                            DrawGraph(tmpX, tmpY, tmpHandle[i], TRUE);
-                        }
-                        drawFlag = FALSE;
-                    }
-                    y--;
-                }
+                y = xpy;
+                x = 0;
             }
             else {
-                int y = MAX_SIZE-1;
-                for (int x = xpy - y; x < MAX_SIZE; x++) {
-                    if (mMapData[z][y][x] >= 0) {
-                        int tmpX = SystemData::mWidth * 5 / 8 + (x - y - 1) * SystemData::mChipSize / 2;
-                        int tmpY = SystemData::mHeight / 2 + (x + y) * SystemData::mChipSize / 4 - SystemData::mChipSize / 2 * (z - 1);
-                        DrawGraph(tmpX, tmpY, mMapChip[mMapData[z][y][x]], TRUE);
-                    }
-                    if (x == mSelectX && y == mSelectY && z == mSelectZ) {
-                        int tmpX = SystemData::mWidth * 5 / 8 + (x - y - 1) * SystemData::mChipSize / 2;
-                        int tmpY = SystemData::mHeight / 2 + (x + y) * SystemData::mChipSize / 4 - SystemData::mChipSize / 2 * (z - 1);
-                        DrawGraph(tmpX, tmpY, mGraph[(int)eGraph::Select], TRUE);
-                    }
-                    y--;
+                y = MAX_SIZE - 1;
+                x = xpy - y;
+            }
+            for (; x <= min(xpy, MAX_SIZE-1); x++) {
+                std::vector<int> tmpHandle;
+                // ここから影表示
+                if (x == sx && y == mSelectY && z == mSelectZ) {
+                    tmpHandle.push_back(mGraph[(int)eGraph::LeftWall]);
+                    drawFlag = TRUE;
                 }
+                if (x == mSelectX && y == sy && z == mSelectZ) {
+                    tmpHandle.push_back(mGraph[(int)eGraph::RightWall]);
+                    drawFlag = TRUE;
+                }
+                if (x == mSelectX && y == mSelectY && z == sz) {
+                    tmpHandle.push_back(mGraph[(int)eGraph::BottomWall]);
+                    drawFlag = TRUE;
+                }
+                // ブロック表示
+                if (mMapData[z][y][x] >= 0) {
+                    tmpHandle.push_back(mMapChip[mMapData[z][y][x]]);
+                    drawFlag = TRUE;
+                }
+                // マーカー表示
+                if (x == mSelectX && y == mSelectY && z == mSelectZ) {
+                    tmpHandle.push_back(mGraph[(int)eGraph::Select]);
+                    drawFlag = TRUE;
+                }
+
+                if (drawFlag) {
+                    int tmpX = SystemData::mWidth * 5 / 8 + (x - mSelectX - y + mSelectY - 1) * SystemData::mChipSize / 2 * mag;
+                    int tmpY = SystemData::mHeight / 2 + (x - mSelectX + y - mSelectY) * SystemData::mChipSize / 4 * mag - SystemData::mChipSize / 2 * (z - mSelectZ - 1) * mag;
+                    for (unsigned int i = 0; i < tmpHandle.size(); i++) {
+                        DrawExtendGraph(tmpX, tmpY, tmpX + SystemData::mChipSize*mag, tmpY + SystemData::mChipSize*mag, tmpHandle[i], TRUE);
+                    }
+                    drawFlag = FALSE;
+                }
+                y--;
             }
         }
     }
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 
-    DrawFormatString(SystemData::mWidth / 4 + SystemData::mWidth / 80, SystemData::mHeight / 60, GetColor(255, 255, 255), "X:%d Y:%d Z:%d", mSelectX, mSelectY, mSelectZ);
+    DrawFormatString(SystemData::mWidth / 4 + SystemData::mWidth / 80, SystemData::mHeight / 60, GetColor(255, 255, 255), "X:%d Y:%d Z:%d  %.0lf%%", mSelectX, mSelectY, mSelectZ, mag*100);
     if (mBlendFlag) DrawFormatString(SystemData::mWidth / 4 + SystemData::mWidth / 80, SystemData::mHeight * 3 / 60, GetColor(255, 255, 255), "透過モード：ON");
     else DrawFormatString(SystemData::mWidth / 4 + SystemData::mWidth / 80, SystemData::mHeight * 3 / 60, GetColor(255, 255, 255), "透過モード：OFF");
     DrawFormatString(SystemData::mWidth / 4 + SystemData::mWidth / 80, SystemData::mHeight * 53 / 60, GetColor(255, 255, 255), "A: 左上　W: 右上　TAB: 編集モード切替　CTRL: 透過モード切替");
     DrawFormatString(SystemData::mWidth / 4 + SystemData::mWidth / 80, SystemData::mHeight * 55 / 60, GetColor(255, 255, 255), "S: 左下　D: 右下　ENTER: 設置");
     DrawFormatString(SystemData::mWidth / 4 + SystemData::mWidth / 80, SystemData::mHeight * 57 / 60, GetColor(255, 255, 255), "E: 上　Q: 下　BACK: 削除");
+   
     // マップチップリスト表示
     if (mSelectFlag) {
         DrawBox(0, 0, SystemData::mWidth / 4, SystemData::mHeight, GetColor(40, 40, 40), TRUE); // 背景

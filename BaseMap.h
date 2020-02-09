@@ -4,6 +4,12 @@
 #include "IMapChanger.h"
 #include "Keyboard.h"
 
+enum class eChipSet {
+	Default,
+
+	Num,
+};
+
 class BaseMap : public Task {
 protected:
 	IMapChanger* mMapChanger;

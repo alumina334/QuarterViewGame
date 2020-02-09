@@ -24,6 +24,7 @@ private:
     int mSelectY;
     int mSelectZ;
     int mSelectBlock;
+    double mag;
     bool mBlendFlag;
     bool mSelectFlag;
     std::vector<int> mGraph;
