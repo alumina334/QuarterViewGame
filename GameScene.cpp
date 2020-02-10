@@ -8,6 +8,7 @@ GameScene::GameScene(ISceneChanger* changer) : BaseScene(changer), mMapMgr() {
 void GameScene::initialize(){
     //mBGHandle = LoadGraph();    //”wŒi‰æ‘œ
     mMapMgr = new MapMgr();
+    mMapMgr->initialize();
 }
 
 //XV

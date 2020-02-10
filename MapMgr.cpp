@@ -3,11 +3,16 @@
 
 
 MapMgr::MapMgr():
-	mBlockHandle(0), mNextMap(eMap::None), mParameter(NULL){
-	mMapStack.push(std::make_shared<FieldMap>(this));
+	mBlockHandle(0), mNextMap(eMap::None){
+	mParameter = new Parameter();
+	mParameter->set("StartX", 0);
+	mParameter->set("StartY", 0);
+	mParameter->set("StartZ", 0);
+	mMapStack.push(std::make_shared<FieldMap>(this, mParameter));
 }
 
 void MapMgr::initialize() {
+	mMapStack.top()->initialize();
 	// mBlockHandle = LoadGraph("images/block.png");
 }
 
@@ -21,7 +26,10 @@ void MapMgr::update() {
 		switch (mNextMap) {              // •ªŠò
 		case eMap::FieldMap:
 			mMapStack.pop();
-			mMapStack.push(std::make_shared<FieldMap>(this));
+			mParameter->set("StartX", 0);
+			mParameter->set("StartY", 0);
+			mParameter->set("StartZ", 0);
+			mMapStack.push(std::make_shared<FieldMap>(this, mParameter));
 			break;
 		case eMap::BattleMap:
 			//mMapStack.push(std::make_shared<BattleMap>(this));
