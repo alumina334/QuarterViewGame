@@ -1,8 +1,9 @@
 ﻿#include <vector>
-#include "DxLib.h"
-#include "EditScene.h"
 #include <string>
 #include <sstream>
+#include <fstream>
+#include "DxLib.h"
+#include "EditScene.h"
 
 
 EditScene::EditScene(ISceneChanger* changer) : 
@@ -24,25 +25,25 @@ EditScene::EditScene(ISceneChanger* changer) :
 
 //初期化
 void EditScene::initialize() {
+    // ファイル読み込み
     char fileName[256];
     DrawString(10, 10, "読み込むファイル名(xxxx)を入力してください。./map/\"xxxx\".dat (Escで新規作成)", GetColor(255, 255, 255));
     int res = KeyInputString(10, 30, 256, fileName, TRUE);
     std::string fstring = "./map/" + std::string(fileName) + ".dat";
-    if (res == 1) {
+
+    if (res == 1) { // 入力があった場合
         FILE* fp;
         errno_t error;
-
         error = fopen_s(&fp, fstring.c_str(), "rb");
         if (error != 0) {
             DrawString(10, 50, "ファイルが開けませんでした。", GetColor(255, 255, 255));
             this->initialize();
         }
         else {
-            int size;
-            fread(&size, sizeof(int), 1, fp);
-            for (int z = 0; z < size; z++) {
-                for (int y = 0; y < size; y++) {
-                    for (int x = 0; x < size; x++) {
+            fread(&mMapSize, sizeof(int), 1, fp);
+            for (int z = 0; z < mMapSize; z++) {
+                for (int y = 0; y < mMapSize; y++) {
+                    for (int x = 0; x < mMapSize; x++) {
                         fread(&mMapData[z][y][x], sizeof(int), 1, fp);
                     }
                 }
@@ -173,7 +174,7 @@ void EditScene::draw() {
 
     //影表示
     if (!mSelectFlag) {
-        DrawBox(SystemData::mWidth / 4, 0, SystemData::mWidth, SystemData::mHeight, GetColor(40, 40, 40), TRUE); // 背景
+        DrawBox(200, 0, 800, 600, GetColor(40, 40, 40), TRUE); // 背景
     }
     int sx=0, sy=0, sz=0;
     for (int x = mSelectX-1; x >= 0; x--) {
@@ -196,31 +197,11 @@ void EditScene::draw() {
     }
     // マップ後ろから順に表示
     bool drawFlag = FALSE;
-    for (int z = 0; z < MAX_SIZE; z++) {
-        if (mBlendFlag) {
-            if (z <= mSelectZ) {
-                SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-            }
-            else if (z == mSelectZ + 1) {
-                SetDrawBlendMode(DX_BLENDMODE_ALPHA, 40);
-            }
-            else {
-                break;
-            }
-
-        }
-        for (int xpy = 0; xpy < MAX_SIZE*2-1; xpy++) {
-            int x, y;
-            if (xpy < MAX_SIZE) {
-                y = xpy;
-                x = 0;
-            }
-            else {
-                y = MAX_SIZE - 1;
-                x = xpy - y;
-            }
-            for (; x <= min(xpy, MAX_SIZE-1); x++) {
-                std::vector<int> tmpHandle;
+    std::vector<int> tmpHandle;
+    for (int z = 0; z < mMapSize; z++) {
+        for (int y = 0; y < mMapSize; y++) {
+            for (int x = 0; x < mMapSize; x++) {
+                tmpHandle.clear();
                 // ここから影表示
                 if (x == sx && y == mSelectY && z == mSelectZ) {
                     tmpHandle.push_back(mGraph[(int)eGraph::LeftWall]);
@@ -246,14 +227,13 @@ void EditScene::draw() {
                 }
 
                 if (drawFlag) {
-                    int tmpX = SystemData::mWidth * 5 / 8 + (x - mSelectX - y + mSelectY - 1) * SystemData::mChipSize / 2 * mag;
-                    int tmpY = SystemData::mHeight / 2 + (x - mSelectX + y - mSelectY) * SystemData::mChipSize / 4 * mag - SystemData::mChipSize / 2 * (z - mSelectZ - 1) * mag;
+                    int tmpX = 500 + (x - mSelectX - y + mSelectY - 1) * SystemData::mChipSize / 2 * mag;
+                    int tmpY = 300 + (x - mSelectX + y - mSelectY) * SystemData::mChipSize / 4 * mag - (z - mSelectZ - 1) * SystemData::mChipSize / 2 * mag;
                     for (unsigned int i = 0; i < tmpHandle.size(); i++) {
-                        DrawExtendGraph(tmpX, tmpY, tmpX + SystemData::mChipSize*mag, tmpY + SystemData::mChipSize*mag, tmpHandle[i], TRUE);
+                        DrawExtendGraph(tmpX, tmpY, tmpX + SystemData::mChipSize * mag, tmpY + SystemData::mChipSize * mag, tmpHandle[i], TRUE);
                     }
                     drawFlag = FALSE;
                 }
-                y--;
             }
         }
     }

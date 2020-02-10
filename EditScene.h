@@ -18,12 +18,12 @@ private:
         Num,
     };
     const int MAX_CHIP = 2;
-    const int MAX_SIZE = 32;
     //char fileName[256];
     int mSelectX;
     int mSelectY;
     int mSelectZ;
     int mSelectBlock;
+    int mMapSize;
     double mag;
     bool mBlendFlag;
     bool mSelectFlag;
