@@ -1,4 +1,5 @@
-﻿#include <vector>
+﻿
+#include <vector>
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -10,7 +11,7 @@ EditScene::EditScene(ISceneChanger* changer) :
     BaseScene(changer), 
     mMapData(32, std::vector<std::vector<int>>(32, std::vector<int>(32, -1))),
     mMapChip(0, 0), mSelectBlock(0), mBlendFlag(FALSE), mSelectFlag(FALSE), mag(1),
-    mSelectX(0), mSelectY(0), mSelectZ(0)
+    mSelectX(0), mSelectY(0), mSelectZ(0), mMapSize(32)
 {
     mMapChip.resize(3);
     LoadDivGraph("images/block.png", 3, 3, 1, SystemData::mChipSize, SystemData::mChipSize, &mMapChip[0]);    //背景画像のロード
@@ -112,33 +113,33 @@ void EditScene::update() {
     else {
         // マーカー操作
         if (Keyboard::keyboardGet(KEY_INPUT_W) == 1) {
-            if (mSelectY > 0) {
-                mSelectY--;
-            }
-        }
-        if (Keyboard::keyboardGet(KEY_INPUT_A) == 1) {
-            if (mSelectX > 0) {
-                mSelectX--;
-            }
-        }
-        if (Keyboard::keyboardGet(KEY_INPUT_S) == 1) {
-            if (mSelectY < 31) {
-                mSelectY++;
-            }
-        }
-        if (Keyboard::keyboardGet(KEY_INPUT_D) == 1) {
-            if (mSelectX < 31) {
-                mSelectX++;
-            }
-        }
-        if (Keyboard::keyboardGet(KEY_INPUT_Q) == 1) {
             if (mSelectZ > 0) {
                 mSelectZ--;
             }
         }
-        if (Keyboard::keyboardGet(KEY_INPUT_E) == 1) {
+        if (Keyboard::keyboardGet(KEY_INPUT_A) == 1) {
+            if (mSelectY > 0) {
+                mSelectY--;
+            }
+        }
+        if (Keyboard::keyboardGet(KEY_INPUT_S) == 1) {
             if (mSelectZ < 31) {
                 mSelectZ++;
+            }
+        }
+        if (Keyboard::keyboardGet(KEY_INPUT_D) == 1) {
+            if (mSelectY < 31) {
+                mSelectY++;
+            }
+        }
+        if (Keyboard::keyboardGet(KEY_INPUT_Q) == 1) {
+            if (mSelectX > 0) {
+                mSelectX--;
+            }
+        }
+        if (Keyboard::keyboardGet(KEY_INPUT_E) == 1) {
+            if (mSelectX < 31) {
+                mSelectX++;
             }
         }
         // ブロック設置
@@ -201,18 +202,29 @@ void EditScene::draw() {
     for (int z = 0; z < mMapSize; z++) {
         for (int y = 0; y < mMapSize; y++) {
             for (int x = 0; x < mMapSize; x++) {
+                if (mBlendFlag) {
+                    if (x == mSelectX+1) {
+                        SetDrawBlendMode(DX_BLENDMODE_ALPHA, 40);
+                    }
+                    else if (x <= mSelectX) {
+                        SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+                    }
+                    else {
+                        break;
+                    }
+                }
                 tmpHandle.clear();
                 // ここから影表示
                 if (x == sx && y == mSelectY && z == mSelectZ) {
-                    tmpHandle.push_back(mGraph[(int)eGraph::LeftWall]);
+                    tmpHandle.push_back(mGraph[(int)eGraph::BottomWall]);
                     drawFlag = TRUE;
                 }
                 if (x == mSelectX && y == sy && z == mSelectZ) {
-                    tmpHandle.push_back(mGraph[(int)eGraph::RightWall]);
+                    tmpHandle.push_back(mGraph[(int)eGraph::LeftWall]);
                     drawFlag = TRUE;
                 }
                 if (x == mSelectX && y == mSelectY && z == sz) {
-                    tmpHandle.push_back(mGraph[(int)eGraph::BottomWall]);
+                    tmpHandle.push_back(mGraph[(int)eGraph::RightWall]);
                     drawFlag = TRUE;
                 }
                 // ブロック表示
@@ -227,8 +239,8 @@ void EditScene::draw() {
                 }
 
                 if (drawFlag) {
-                    int tmpX = 500 + (x - mSelectX - y + mSelectY - 1) * SystemData::mChipSize / 2 * mag;
-                    int tmpY = 300 + (x - mSelectX + y - mSelectY) * SystemData::mChipSize / 4 * mag - (z - mSelectZ - 1) * SystemData::mChipSize / 2 * mag;
+                    int tmpX = 500 + (y - mSelectY - z + mSelectZ - 1) * SystemData::mChipSize / 2 * mag;
+                    int tmpY = 300 + (y - mSelectY + z - mSelectZ) * SystemData::mChipSize / 4 * mag - (x - mSelectX - 1) * SystemData::mChipSize / 2 * mag;
                     for (unsigned int i = 0; i < tmpHandle.size(); i++) {
                         DrawExtendGraph(tmpX, tmpY, tmpX + SystemData::mChipSize * mag, tmpY + SystemData::mChipSize * mag, tmpHandle[i], TRUE);
                     }

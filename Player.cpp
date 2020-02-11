@@ -13,13 +13,13 @@ void Player::finalize() {
 
 void Player::update() {
 	if (Keyboard::keyboardGet(KEY_INPUT_W) > 0) {
-		mY -= 0.2;
+		mZ -= 0.2;
 	}else if (Keyboard::keyboardGet(KEY_INPUT_A) > 0) {
-		mX -= 0.2;
+		mY -= 0.2;
 	}else if (Keyboard::keyboardGet(KEY_INPUT_S) > 0) {
-		mY += 0.2;
+		mZ += 0.2;
 	}else if (Keyboard::keyboardGet(KEY_INPUT_D) > 0) {
-		mX += 0.2;
+		mY += 0.2;
 	}
 }
 

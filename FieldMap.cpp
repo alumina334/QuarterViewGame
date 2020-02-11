@@ -40,10 +40,10 @@ void FieldMap::draw() {
 	DrawGraph(100, 100, mMapChip[1], TRUE);
 
 	for (int y = 0; y < 32; y++) {
-		for (int x = 0; x < 32; x++) {
+		for (int z = 0; z < 32; z++) {
 			double px, py, pz;
 			mPlayer.getXYZ(px, py, pz);
-			DrawGraph(400 + 16 * (x - px - y + py - 1), 300 + 8 * (x - px + y - py - 2), mMapChip[mMapData[0][y][x]], TRUE);
+			DrawGraph(400 + 16 * (y - py - z + pz - 1), 300 + 8 * (y - py + z - pz - 2), mMapChip[mMapData[z][y][0]], TRUE);
 		}
 	}
 
